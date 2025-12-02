@@ -1,0 +1,13 @@
+{
+    "name": "kacpers-tools",
+    "owner": {
+        "name": "Kacper Martela"
+    },
+    "plugins": [
+        {
+            "name": "essentials",
+            "source": "./plugins/essentials",
+            "version": "1.0.0"
+        }
+    ]
+}
