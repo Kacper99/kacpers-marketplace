@@ -8,6 +8,11 @@
             "name": "essentials",
             "source": "./plugins/essentials",
             "version": "1.0.0"
+        },
+        {
+            "name": "code-review",
+            "source": "./plugins/code-review",
+            "version": "1.0.0"
         }
     ]
 }

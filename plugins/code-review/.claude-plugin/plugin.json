@@ -1,0 +1,8 @@
+{
+  "name": "code-review",
+  "description": "Tools useful for code review", 
+  "version": "1.0.0",
+  "author": {
+    "name": "Kacper Martela"
+  }
+}
