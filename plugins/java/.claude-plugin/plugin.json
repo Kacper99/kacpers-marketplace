@@ -1,0 +1,8 @@
+{
+  "name": "java",
+  "description": "Suite of tools for developing Java based software", 
+  "version": "1.0.0",
+  "author": {
+    "name": "Kacper Martela"
+  }
+}
