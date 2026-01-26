@@ -1,0 +1,37 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title \"🔔 Claude Code\" -message \"$(basename $(pwd)) Claude needs your input\" -sound default"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title \"✅ Claude Code\" -message \"$(basename $(pwd)) Claude completed your task!\" -sound default"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title \"⚠️ Claude Code\" -message \"$(basename $(pwd)) Permission required\" -sound default"
+          }
+        ]
+      }
+    ]
+  }
+}
