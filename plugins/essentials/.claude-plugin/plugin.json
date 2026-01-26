@@ -1,7 +1,7 @@
 {
   "name": "essentials",
   "description": "Essential plugins for any dev envrionment", 
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Kacper Martela"
   }
