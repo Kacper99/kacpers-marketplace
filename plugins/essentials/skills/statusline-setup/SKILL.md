@@ -1,5 +1,5 @@
 ---
-name: statusline
+name: statusline-setup
 description: Configure Claude Code's statusline with a Powerlevel10k-inspired theme showing directory, git branch, lines changed, and context usage progress bar.
 ---
 
