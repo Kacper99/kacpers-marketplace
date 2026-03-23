@@ -12,6 +12,7 @@ This skill configures Claude Code's statusline with a Powerlevel10k-inspired the
 - **Git branch** - Displays branch name with `` icon
 - **Lines changed** - Shows additions (green `+N`) and deletions (red `-N`)
 - **Context usage** - Progress bar with gradient shading (green/yellow/red)
+- **Rate limit usage** - 5-hour quota progress bar with reset countdown (e.g. `[██        ] 23% · 2h 15m left`)
 
 ## Pre-Installation Checks
 
@@ -64,148 +65,158 @@ Write the following bash script to `~/.claude/statusline-command.sh`:
 ```bash
 #!/bin/bash
 
-# Powerlevel10k-inspired statusline for Claude Code
-# Displays: directory | git branch | lines changed | context progress bar
+# Read JSON input from stdin
+input=$(cat)
 
-# Colors
-RESET="\033[0m"
-BOLD="\033[1m"
-DIM="\033[2m"
-BLUE="\033[34m"
-GREEN="\033[32m"
-RED="\033[31m"
-YELLOW="\033[33m"
-CYAN="\033[36m"
-MAGENTA="\033[35m"
+# Extract current working directory
+cwd=$(echo "$input" | jq -r '.workspace.current_dir')
 
-# Get shortened directory (~/Projects/my-app -> ~/my-app)
-get_short_dir() {
-    local dir="$PWD"
-    if [[ "$dir" == "$HOME"* ]]; then
-        dir="~${dir#$HOME}"
-    fi
-    # Only show home prefix and current directory
-    local current=$(basename "$dir")
-    if [[ "$dir" == "~" ]]; then
-        echo "~"
-    elif [[ "$dir" == "~/"* ]]; then
-        echo "~/$current"
-    else
-        echo "/$current"
-    fi
-}
+# Shortened directory format: ~/currentDir
+home="$HOME"
+if [[ "$cwd" == "$home" ]]; then
+    short_dir="~"
+elif [[ "$cwd" == "$home"/* ]]; then
+    short_dir="~/$(basename "$cwd")"
+else
+    short_dir="$(basename "$cwd")"
+fi
 
 # Get git branch
-get_git_branch() {
-    local branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
-    if [[ -n "$branch" ]]; then
-        echo " $branch"
+cd "$cwd" 2>/dev/null || true
+git_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo '')
+git_status_str=""
+
+if [ -n "$git_branch" ]; then
+    git_status_str=" $git_branch"
+fi
+
+# Get Claude's session lines added/removed
+lines_added=$(echo "$input" | jq -r '.cost.total_lines_added // 0')
+lines_removed=$(echo "$input" | jq -r '.cost.total_lines_removed // 0')
+lines_added_str=""
+lines_removed_str=""
+[ "$lines_added" != "0" ] && lines_added_str="+$lines_added"
+[ "$lines_removed" != "0" ] && lines_removed_str="-$lines_removed"
+
+# Extract context used percentage and create progress bar
+context_used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
+context_str=""
+
+if [ -n "$context_used" ]; then
+    used_int=$(printf "%.0f" "$context_used")
+
+    if (( $(echo "$context_used < 50" | bc -l) )); then
+        bar_color=$'\033[32m'  # Green for 0-50%
+    elif (( $(echo "$context_used < 75" | bc -l) )); then
+        bar_color=$'\033[33m'  # Yellow for 50-75%
+    else
+        bar_color=$'\033[31m'  # Red for 75-100%
     fi
-}
 
-# Get git diff stats
-get_git_stats() {
-    if git rev-parse --git-dir > /dev/null 2>&1; then
-        local stats=$(git diff --shortstat 2>/dev/null)
-        local staged_stats=$(git diff --cached --shortstat 2>/dev/null)
+    bar_length=10
+    total_blocks=$(echo "$context_used * $bar_length / 100" | bc -l)
+    full_blocks=$(printf "%.0f" "$(echo "$total_blocks" | bc -l | awk '{print int($1)}')")
+    fraction=$(echo "$total_blocks - $full_blocks" | bc -l)
 
-        local insertions=0
-        local deletions=0
+    shade_char=""
+    if (( $(echo "$fraction >= 0.875" | bc -l) )); then
+        shade_char="█"
+        full_blocks=$((full_blocks + 1))
+    elif (( $(echo "$fraction >= 0.625" | bc -l) )); then
+        shade_char="▓"
+    elif (( $(echo "$fraction >= 0.375" | bc -l) )); then
+        shade_char="▒"
+    elif (( $(echo "$fraction >= 0.125" | bc -l) )); then
+        shade_char="░"
+    fi
 
-        # Parse unstaged changes
-        if [[ -n "$stats" ]]; then
-            local ins=$(echo "$stats" | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+')
-            local del=$(echo "$stats" | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+')
-            insertions=$((insertions + ${ins:-0}))
-            deletions=$((deletions + ${del:-0}))
+    bar=$'\033[0m'"["
+    bar+="${bar_color}"
+    for ((i=0; i<full_blocks; i++)); do bar+="█"; done
+    [ -n "$shade_char" ] && [ "$full_blocks" -lt "$bar_length" ] && bar+="$shade_char"
+    bar+=$'\033[0m'
+    current_length=$full_blocks
+    [ -n "$shade_char" ] && [ "$full_blocks" -lt "$bar_length" ] && current_length=$((current_length + 1))
+    empty=$((bar_length - current_length))
+    for ((i=0; i<empty; i++)); do bar+=" "; done
+    bar+="]"
+
+    context_str=" $bar ${used_int}%"
+fi
+
+# Extract 5-hour rate limit data
+rate_used=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+rate_resets_at=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+rate_str=""
+
+if [ -n "$rate_used" ]; then
+    rate_int=$(printf "%.0f" "$rate_used")
+
+    if (( $(echo "$rate_used < 50" | bc -l) )); then
+        rate_color=$'\033[32m'  # Green for 0-50%
+    elif (( $(echo "$rate_used < 75" | bc -l) )); then
+        rate_color=$'\033[33m'  # Yellow for 50-75%
+    else
+        rate_color=$'\033[31m'  # Red for 75-100%
+    fi
+
+    bar_length=10
+    total_blocks=$(echo "$rate_used * $bar_length / 100" | bc -l)
+    full_blocks=$(printf "%.0f" "$(echo "$total_blocks" | bc -l | awk '{print int($1)}')")
+    fraction=$(echo "$total_blocks - $full_blocks" | bc -l)
+
+    shade_char=""
+    if (( $(echo "$fraction >= 0.875" | bc -l) )); then
+        shade_char="█"
+        full_blocks=$((full_blocks + 1))
+    elif (( $(echo "$fraction >= 0.625" | bc -l) )); then
+        shade_char="▓"
+    elif (( $(echo "$fraction >= 0.375" | bc -l) )); then
+        shade_char="▒"
+    elif (( $(echo "$fraction >= 0.125" | bc -l) )); then
+        shade_char="░"
+    fi
+
+    rate_bar=$'\033[0m'"["
+    rate_bar+="${rate_color}"
+    for ((i=0; i<full_blocks; i++)); do rate_bar+="█"; done
+    [ -n "$shade_char" ] && [ "$full_blocks" -lt "$bar_length" ] && rate_bar+="$shade_char"
+    rate_bar+=$'\033[0m'
+    current_length=$full_blocks
+    [ -n "$shade_char" ] && [ "$full_blocks" -lt "$bar_length" ] && current_length=$((current_length + 1))
+    empty=$((bar_length - current_length))
+    for ((i=0; i<empty; i++)); do rate_bar+=" "; done
+    rate_bar+="]"
+
+    time_str=""
+    if [ -n "$rate_resets_at" ]; then
+        now=$(date +%s)
+        remaining_secs=$((rate_resets_at - now))
+        if [ "$remaining_secs" -gt 0 ]; then
+            hours=$((remaining_secs / 3600))
+            mins=$(( (remaining_secs % 3600) / 60 ))
+            if [ "$hours" -gt 0 ]; then
+                time_str=" · ${hours}h ${mins}m left"
+            else
+                time_str=" · ${mins}m left"
+            fi
         fi
-
-        # Parse staged changes
-        if [[ -n "$staged_stats" ]]; then
-            local ins=$(echo "$staged_stats" | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+')
-            local del=$(echo "$staged_stats" | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+')
-            insertions=$((insertions + ${ins:-0}))
-            deletions=$((deletions + ${del:-0}))
-        fi
-
-        local output=""
-        if [[ $insertions -gt 0 ]]; then
-            output="${GREEN}+${insertions}${RESET}"
-        fi
-        if [[ $deletions -gt 0 ]]; then
-            [[ -n "$output" ]] && output="$output "
-            output="${output}${RED}-${deletions}${RESET}"
-        fi
-        echo -e "$output"
-    fi
-}
-
-# Build context progress bar
-# Usage: CLAUDE_CONTEXT_USED and CLAUDE_CONTEXT_TOTAL env vars
-build_progress_bar() {
-    local used="${CLAUDE_CONTEXT_USED:-0}"
-    local total="${CLAUDE_CONTEXT_TOTAL:-200000}"
-
-    if [[ "$total" -eq 0 ]]; then
-        return
     fi
 
-    local percentage=$((used * 100 / total))
-    local bar_width=10
-    local filled=$((percentage * bar_width / 100))
-    local empty=$((bar_width - filled))
+    rate_str=" $rate_bar ${rate_int}%${time_str}"
+fi
 
-    # Choose color based on percentage
-    local color="$GREEN"
-    if [[ $percentage -ge 75 ]]; then
-        color="$RED"
-    elif [[ $percentage -ge 50 ]]; then
-        color="$YELLOW"
-    fi
-
-    # Build the bar
-    local bar=""
-    for ((i=0; i<filled; i++)); do
-        bar+="█"
-    done
-    for ((i=0; i<empty; i++)); do
-        bar+="░"
-    done
-
-    echo -e "${DIM}[${RESET}${color}${bar}${RESET}${DIM}]${RESET} ${percentage}%"
-}
-
-# Main output
-main() {
-    local dir=$(get_short_dir)
-    local branch=$(get_git_branch)
-    local stats=$(get_git_stats)
-    local progress=$(build_progress_bar)
-
-    local output=""
-
-    # Directory
-    output="${BLUE}${BOLD}${dir}${RESET}"
-
-    # Git branch
-    if [[ -n "$branch" ]]; then
-        output="${output} ${MAGENTA}${branch}${RESET}"
-    fi
-
-    # Git stats
-    if [[ -n "$stats" ]]; then
-        output="${output} ${stats}"
-    fi
-
-    # Context progress
-    if [[ -n "$progress" ]]; then
-        output="${output}  ${progress}"
-    fi
-
-    echo -e "$output"
-}
-
-main
+# Output
+printf "\033[36m%s\033[0m" "$short_dir"
+[ -n "$git_status_str" ] && printf "\033[34m%s\033[0m" "$git_status_str"
+if [ -n "$lines_added_str" ] || [ -n "$lines_removed_str" ]; then
+    printf " "
+    [ -n "$lines_added_str" ] && printf "\033[32m%s\033[0m" "$lines_added_str"
+    [ -n "$lines_added_str" ] && [ -n "$lines_removed_str" ] && printf " "
+    [ -n "$lines_removed_str" ] && printf "\033[31m%s\033[0m" "$lines_removed_str"
+fi
+[ -n "$context_str" ] && printf "\033[33m%s\033[0m" "$context_str"
+[ -n "$rate_str" ] && printf "\033[33m%s\033[0m" "$rate_str"
 ```
 
 ### Step 2: Make the script executable
@@ -234,10 +245,11 @@ If the file already exists, merge the `statusLine` key into the existing configu
 After installation:
 1. Restart Claude Code
 2. The statusline should appear at the bottom showing:
-   - Current directory in blue
-   - Git branch with  icon in magenta (if in a git repo)
+   - Current directory in cyan
+   - Git branch with  icon in blue (if in a git repo)
    - Lines added/removed in green/red (if there are changes)
-   - Context usage progress bar
+   - Context usage progress bar with percentage
+   - 5-hour rate limit bar with reset countdown (e.g. `[██        ] 23% · 2h 15m left`) — only visible for Pro/Max subscribers after the first API response
 
 ## Customization
 
