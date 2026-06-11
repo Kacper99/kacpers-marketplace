@@ -1,23 +1,23 @@
 {
-    "name": "kacpers-tools",
-    "owner": {
-        "name": "Kacper Martela"
+  "name": "kacpers-tools",
+  "owner": {
+    "name": "Kacper Martela"
+  },
+  "plugins": [
+    {
+      "name": "essentials",
+      "source": "./plugins/essentials",
+      "version": "1.0.0"
     },
-    "plugins": [
-        {
-            "name": "essentials",
-            "source": "./plugins/essentials",
-            "version": "1.0.0"
-        },
-        {
-            "name": "java",
-            "source": "./plugins/java",
-            "version": "1.0.3"
-        },
-        {
-            "name": "code-review",
-            "source": "./plugins/code-review",
-            "version": "1.0.0"
-        }
-    ]
+    {
+      "name": "java",
+      "source": "./plugins/java",
+      "version": "1.0.3"
+    },
+    {
+      "name": "code-review",
+      "source": "./plugins/code-review",
+      "version": "1.0.0"
+    }
+  ]
 }
