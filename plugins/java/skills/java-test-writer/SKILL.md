@@ -1,12 +1,12 @@
 ---
-name: java-unit-tests
-description: Comprehensive guidance for writing high-quality unit tests in Java projects using JUnit 5 and AssertJ. Use when writing unit tests, creating test classes, or need guidance on mocking strategies, assertions, test builders, or JUnit 5 best practices. Requires JUnit 5, AssertJ, and Mockito dependencies.
+name: java-test-writer
+description: Comprehensive guidance for writing high-quality tests in Java projects using JUnit 5 and AssertJ. Use when writing tests, creating test classes, or need guidance on mocking strategies, assertions, test builders, or JUnit 5 best practices. Requires JUnit 5, AssertJ, and Mockito dependencies. Applies to any type of test.
 ---
 
-# Java Unit Testing Skill
+# Java Test Writer Skill
 
 ## Overview
-This skill provides comprehensive guidance for writing high-quality unit tests in Java projects using JUnit 5 and AssertJ. It enforces best practices for test structure, mocking strategy, and assertion patterns.
+This skill provides comprehensive guidance for writing high-quality tests in Java projects using JUnit 5 and AssertJ. It enforces best practices for test structure, mocking strategy, and assertion patterns.
 
 ## Core Principles
 
