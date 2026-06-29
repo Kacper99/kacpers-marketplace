@@ -18,6 +18,11 @@
       "name": "code-review",
       "source": "./plugins/code-review",
       "version": "1.0.0"
+    },
+    {
+      "name": "dev",
+      "source": "./plugins/code-review",
+      "version": "1.0.0"
     }
   ]
 }
