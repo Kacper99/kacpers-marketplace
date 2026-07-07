@@ -11,7 +11,7 @@ Write a comprehensive implementation plan for $spec_path. Assume the implementin
 
 Document everything that the implementer will need to know. Ensure each task is a bite-sized task. The plan should split the changes into the smallest possible PRs to allow for changes to be incrementally reviewed. Every PR must be correct and have a green build. Follow the template in `template/implementation-plan.md`
 
-Save the plan to !`$KM_CLAUDE_FILES`/{user story or project name}.
+Save the plan to !`echo "$KM_CLAUDE_FILES"`/{user story or project name}.
 
 # Guidelines
 - You must follow all of code quality guidelines set out in the code-quality skill

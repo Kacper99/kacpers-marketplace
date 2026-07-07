@@ -21,8 +21,8 @@
     },
     {
       "name": "dev",
-      "source": "./plugins/code-review",
-      "version": "1.0.0"
+      "source": "./plugins/dev",
+      "version": "1.0.1"
     }
   ]
 }

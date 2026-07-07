@@ -12,7 +12,7 @@ The following environment variables are referenced in the skills in this plugin.
 The variables should be set in a ~/.kmrc file and it must be sourced in the users ~/.zshrc
 
 # Current variable values
-KM_CLAUDE_FILES = !`echo KM_CLAUDE_FILES`
+KM_CLAUDE_FILES = !`echo "$KM_CLAUDE_FILES"`
 
 # Process
 1. Check that ~/.kmrc file exists. If it doesn't exist, create it
