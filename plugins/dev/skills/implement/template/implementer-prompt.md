@@ -9,7 +9,7 @@ If you have any questions about:
 - The approach
 - Anything else which is unclear
 
-Then stop and ask them now 
+Then stop and ask them now.
 
 ## Your job
 
@@ -25,7 +25,7 @@ Review you work and ensure:
 - If writing code:
   - the project is compiling
   - any affected tests are passing
-  - All formatting and build check steps have been ran
+  - All formatting and build check steps have been run
 
 If you find any issues during self review, fix them immediately.
 

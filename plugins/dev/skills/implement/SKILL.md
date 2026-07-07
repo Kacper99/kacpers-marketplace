@@ -12,10 +12,10 @@ Execute a plan as an orchestrator dispatching subagents per task.
 # Roles
 
 ## Main Agent (you)
-You are responsible for orchestrating subagents to implement the plan, and updating the plan as the subagents perform their tasks
+You are responsible for orchestrating subagents to implement the plan, and updating the plan as the subagents perform their tasks.
 
 ## Engineer
-Use the `engineer` agent for any implementation tasks. An agent is responsible for implementing a single task.
+Use the `engineer` agent for any implementation tasks. Each agent is responsible for implementing a single task.
 
 ## Code Reviewer
 Use the `code-reviewer` agent for reviewing a task after an Engineer has completed its implementation.
@@ -34,13 +34,13 @@ Signals which would not suggest a workflow:
 
 ## Step 2
 For each task in the plan:
-1. Dispatch a `engineer` subagent to implement the task in the plan. Use the `template/implementer-prompt.md` the template to prompt the sub agent.
+1. Dispatch a `engineer` subagent to implement the task in the plan. Use the `template/implementer-prompt.md` template to prompt the subagent.
 2. As soon as the agent completes, set the status of the task to "Dev Complete"
 3. Review the agents report from the task, if the agent has not raised any issues or concerns, set the status to "Ready for review"
 4. Dispatch a `code-reviewer` agent to review the implementation. Use `template/code-reviewer-prompt.md` as the template to prompt the agent.
-5. Once the code reviewer completes, review its comments and determine how to address them. Anything non trivial, ask me for feedback.
+5. Once the code reviewer completes, review its comments and determine how to address them. Anything non-trivial, ask me for feedback.
 6. Dispatch a new `engineer` subagent to address the comments with the recommended solutions. Set the status of the task to "Addressing Review"
 7. Once the Engineer completes addressing the review comments, set the status to completed
 
 ## Step 3
-Once the plan has been fully implemented, dispatch a workflow to perform an adverserial review of the implementation. Ensure that agents check the plan has been followed exactly, and that the implementation conforms to the standards set out in the `code-quality` plugin.
+Once the plan has been fully implemented, dispatch a workflow to perform an adversarial review of the implementation. Ensure that agents check the plan has been followed exactly, and that the implementation conforms to the standards set out in the `code-quality` plugin.

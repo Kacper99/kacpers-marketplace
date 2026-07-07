@@ -1,10 +1,10 @@
-You are reviewing the impementation of task [N] in plan [Plan Name] ([Plan File]).
+You are reviewing the implementation of task [N] in plan [Plan Name] ([Plan File]).
 
 Ensure that the requirements of the task were met, as well as ensuring its code quality.
 
-Read the plan in [Plan File] to get an understanding of whats being implemented and the task that was just implemented.
+Read the plan in [Plan File] to get an understanding of what's being implemented and the task that was just implemented.
 
-Read the report of the implemeter at [Implementers Report File]
+Read the report of the implementer at [Implementers Report File]
 
 You are reviewing the following commits:
 - [List of SHAs, commit name, and commit author]
