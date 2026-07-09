@@ -8,7 +8,7 @@ Load the applicable best practices reference file depending on the current conte
 
 - Java:
   - `java/java-best-practices.md`
-- Architecture
-  - `architecture/architecture-best-practices.md`
+- General
+  - `general-best-practices.md`
 
-The architecture reference file must always be loaded.
+The general reference file must always be loaded.
