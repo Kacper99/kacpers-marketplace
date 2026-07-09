@@ -2,6 +2,16 @@ You are implementing Task [N] in plan [Plan Name]
 
 Read the plan from [Plan File]. This contains the full context of the plan. You may also refer to the design document, [Design or Spec file], if needed.
 
+## Context
+Working directory: [Repo Path], branch [Branch]
+
+Commits on branch from earlier tasks:
+ - [One bullet point for each commit. Include the SHA and commit message. If no prior commits then state that]
+
+Read the run notes from [Run Notes File] before starting to understand any environment quirks.
+
+When the plan and design document disagree, the plan wins (it may have deliberately corrected the spec).
+
 ## Before you begin
 If you have any questions about:
 - The wider plan
@@ -27,7 +37,7 @@ Review you work and ensure:
   - any affected tests are passing
   - All formatting and build check steps have been run
 
-If you find any issues during self review, fix them immediately.
+If you find any issues during self review, fix them immediately. This is a mechanical check, do not spawn a seperate reviewer agent for this.
 
 ## Report format
 Write a full report to [Report File]:

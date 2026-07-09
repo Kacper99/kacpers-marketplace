@@ -9,6 +9,16 @@ Read the report of the implementer at [Implementers Report File]
 You are reviewing the following commits:
 - [List of SHAs, commit name, and commit author]
 
+## Context
+Working directory: [Repo Path], branch [Branch]
+
+Commits on branch from earlier tasks. These are already reviewed, do not review them again:
+ - [One bullet point for each commit. Include the SHA and commit message. If no prior commits then state that]
+
+Read the run notes from [Run Notes File] before starting to understand any environment quirks.
+
+When the plan and design document disagree, the plan wins (it may have deliberately corrected the spec).
+
 ## Guidelines
 ### Plan Compliance
 - You must verify each step in the task
