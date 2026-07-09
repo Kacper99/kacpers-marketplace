@@ -60,3 +60,8 @@ If any task ended Partially/Not Compliant, or the plan had major cross-cutting r
 
 # Reports
 Reports should be placed under a report directory in the same directory the plan is in. The format is <plan-dir>/reports/task-N-{report,review}.md
+
+# Selecting the subagents model
+When spawning an `engineer` subagent you may only use Sonnet or Opus. Do not use Haiku or Fable. Select Sonnet or Opus based on the complexity of the task. Simple file moves or small changes can be handled by Sonnet.
+
+When spawning a `code-review` subagent. You may only use Opus.
