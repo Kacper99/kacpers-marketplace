@@ -8,6 +8,17 @@
 ## Dependency Graph
 [Create a mermaid diagram to show the dependencies between tasks]
 
+After the diagram, state explicitly:
+- which chains are **independent and may run concurrently**
+- the top-level paths each chain touches, so an orchestrator can judge collision risk
+- which task is the convergence point where the chains meet
+
+## Status vocabulary
+
+Ready For Dev -> In Progress -> Ready For Review -> Addressing Review -> Completed
+
+**The orchestrator owns these lines. Implementers and reviewers must not edit them.**
+
 ## Tasks
 
 ### Task [N]: [Task name]
