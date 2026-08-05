@@ -3,8 +3,8 @@ name: implement
 description: Use this skill when implementing a plan
 user-invocable: true
 disable-model-invocation: false
-argument-hint: [plan file]
-arguments: plan_filename
+argument-hint: [plan directory]
+arguments: plan_dir
 ---
 
 Execute a plan as an orchestrator dispatching subagents per task.
@@ -23,7 +23,7 @@ Use the `code-reviewer` agent for reviewing a task after an Engineer has complet
 # Steps
 
 ## Step 1
-Read the design and plan files, the plan may already be in progress so get a base understanding of where we're at by looking at the status of each task. Ensure that any in progress, or completed tasks do actually exist. These may be commits on the current branch, other branches, or already be merged into master. If an in progress or completed task cannot be found, stop and ask me about it.
+Read the plan at $plan_dir — `context.md` plus every `task-NN.md` — along with the design document it was built from. The plan may already be in progress, so get a base understanding of where we're at by looking at the status of each task. Ensure that any in progress, or completed tasks do actually exist. These may be commits on the current branch, other branches, or already be merged into master. If an in progress or completed task cannot be found, stop and ask me about it.
 
 Create the RUN-NOTES.md next to the plan if it does not exist. Use `template/RUN-NOTES.md` template to seed it.
 
@@ -74,4 +74,4 @@ Record a task's commit SHA only once that task is finally green, after any post-
 # Selecting the subagents model
 When spawning an `engineer` subagent you may only use Sonnet or Opus. Do not use Haiku or Fable. Select Sonnet or Opus based on the complexity of the task. Simple file moves or small changes can be handled by Sonnet.
 
-When spawning a `code-review` subagent. You may only use Opus.
+When spawning a `code-reviewer` subagent. You may only use Opus.

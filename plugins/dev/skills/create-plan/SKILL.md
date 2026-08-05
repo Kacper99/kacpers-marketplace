@@ -11,7 +11,7 @@ Write a comprehensive implementation plan for $spec_path. Assume the implementin
 
 Document everything that the implementer will need to know. Ensure each task is a bite-sized task. The plan should split the changes into the smallest possible PRs to allow for changes to be incrementally reviewed. Every PR must be correct and have a green build. Follow the template in `template/implementation-plan.md`
 
-Save the plan to !`echo "$KM_CLAUDE_FILES"`/{user story or project name}, **as a directory of files rather than one document**:
+Save the plan to !`echo "$KM_CLAUDE_FILES"`/{user story or project name}/plan, **as a directory of files rather than one document**:
 
     context.md      shared: goal, constraints, codebase orientation, dependency
                     graph, definition of done. Every agent reads this.
