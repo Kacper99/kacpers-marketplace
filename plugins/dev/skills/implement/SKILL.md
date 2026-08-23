@@ -24,7 +24,7 @@ Use the `code-reviewer` agent for reviewing a task after an Engineer has complet
 # Steps
 
 ## Step 1
-Read the plan at $plan_dir — `context.md` plus every `task-NN.md` — along with the design document it was built from. The plan may already be in progress, so get a base understanding of where we're at by looking at the status of each task. Ensure that any in progress, or completed tasks do actually exist. These may be commits on the current branch, other branches, or already be merged into master. If an in progress or completed task cannot be found, stop and ask me about it.
+Read the plan at $plan_dir — `context.md` plus every `task-NN.md` — along with the design document it was built from. The plan may already be in progress, so get a base understanding of where we're at by looking at the status of each task. Ensure that any in progress, or completed tasks do actually exist. These may be commits on the current branch, other branches, or already be merged into the default branch. If an in progress or completed task cannot be found, stop and ask me about it.
 
 Create the RUN-NOTES.md next to the plan if it does not exist. Use `../_shared/template/RUN-NOTES.md` template to seed it (shared with `implement-one`).
 
