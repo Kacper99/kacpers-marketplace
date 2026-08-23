@@ -4,7 +4,8 @@ description: Use this skill when implementing a plan directly, without dispatchi
 user-invocable: true
 disable-model-invocation: false
 argument-hint: [plan directory]
-arguments: plan_dir
+arguments:
+  - plan_dir
 ---
 
 Execute a plan by implementing each task yourself, in the current agent, instead of dispatching an `engineer` subagent per task. This trades the isolation and concurrency of `implement` for lower overhead on plans that don't need it — small plans, or a single task you want done inline without spinning up a fresh agent.

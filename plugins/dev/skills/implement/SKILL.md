@@ -4,7 +4,8 @@ description: Use this skill when implementing a plan
 user-invocable: true
 disable-model-invocation: false
 argument-hint: [plan directory]
-arguments: plan_dir
+arguments:
+  - plan_dir
 ---
 
 Execute a plan as an orchestrator dispatching subagents per task.

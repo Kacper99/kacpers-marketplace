@@ -1,6 +1,8 @@
 ---
 name: create-plan
 description: Use this skill when creating a plan based off of a specification
+user-invocable: true
+disable-model-invocation: false
 argument-hint: [spec path]
 arguments:
   - spec_path

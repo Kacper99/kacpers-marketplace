@@ -1,6 +1,8 @@
 ---
 name: brainstorm
 description: Use this for non-trivial creative or design work, especially when requirements, tradeoffs, or behavior are unclear.
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Brainstorming Ideas
