@@ -36,9 +36,9 @@ Work tasks one at a time, in the current agent, picking each one per the chain o
 1. **Implement the task yourself.** Read the task and design doc, read RUN-NOTES for environment quirks, and ask me now about anything unclear in the requirements or approach before you start — there's no subagent to stop and ask instead of you. Then implement exactly what the task specifies, in the plan's repo/branch. Set the status to "Dev Complete" once the implementation itself is done.
 2. **Verify as you go, narrowly.** Run the narrowest thing that answers your question — a single test class, one suite — while working. Reserve the full build for one gate run immediately before committing. Never background a build and poll it; run it in the foreground, redirect to a file, and read the real exit code:
 
-       <build command> > /tmp/check.log 2>&1; echo "EXIT=$?"
+       check_log=$(mktemp); <build command> > "$check_log" 2>&1; echo "EXIT=$?"
 
-   Do not consider it green until you've seen that exit code — a cached build can report up to date without running a single test.
+   Use `mktemp` rather than a fixed name like `/tmp/check.log` — a fixed, predictable path in shared `/tmp` can collide with another run. Do not consider it green until you've seen that exit code — a cached build can report up to date without running a single test.
 3. **Self review**, same bar `implement`'s engineer holds itself to: everything in the spec implemented, project compiling, affected tests passing (checking a test still exists is not the same as checking it still pins the same behaviour — a test can keep its name and cover less), formatting/build checks run. Fix anything you find immediately; this is mechanical, don't dispatch a reviewer for it. Commit, then set the status to "Ready for review".
 4. **Write the task report** to `<plan-dir>/reports/task-N-report.md`: what was implemented, what tests were added and their status, what Agent Skills/Rules were used, self-review findings (if any), deviations from the plan.
 5. **Run the gate build** (if step 2's last narrow run wasn't already the full suite): one full build and test run, redirected to a file, reading the real exit code. Note the exit code and per-suite counts for the reviewer so it doesn't repeat them.

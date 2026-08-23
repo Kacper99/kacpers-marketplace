@@ -37,9 +37,9 @@ While working, run the **narrowest thing that answers your question**: a single 
 
 Never run two builds at once, and never start one in the background and poll for it. Run it in the foreground, redirect the output to a file, and read the real exit code:
 
-    <build command> > /tmp/check.log 2>&1; echo "EXIT=$?"
+    check_log=$(mktemp); <build command> > "$check_log" 2>&1; echo "EXIT=$?"
 
-Do not report a build as green unless you have seen its exit code. Grepping console output for a success string is not the same thing, and a cached build can report everything up to date without executing a single test.
+Use `mktemp` rather than a fixed name like `/tmp/check.log` — other chains build concurrently in their own worktrees, and a fixed name in shared `/tmp` collides across them. Do not report a build as green unless you have seen its exit code. Grepping console output for a success string is not the same thing, and a cached build can report everything up to date without executing a single test.
 
 ## Self Review
 Review your work and ensure:
