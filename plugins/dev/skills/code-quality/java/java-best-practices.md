@@ -3,7 +3,7 @@
 - Always use the `formatted()` method on strings instead of `String.format()`
 - Favour result types over exceptions.
 - Encapsulate behaviour in domain objects. (This does not apply to hibernate entities)
-- Only use hibernate entities for the repository layer, DO NOT expore them into the domain.
+- Only use hibernate entities for the repository layer, DO NOT expose them into the domain.
 - Do not do string concatenation `"foo" +"bar"` just for code formatting purposes
 
 # Testing
@@ -12,9 +12,8 @@
 - If present, use the `java:assertj-expert` skill to follow assertj best practices
 - Prefer fakes over mocks where convenient and reasonable
 - Do not use `@Mock` to define a mock and instead use the `mock()` static factory.
-- `@BeforEach` if not requried, just instantiate the field inline.
+- Avoid `@BeforeEach` if not required; just instantiate the field inline.
 - Avoid spinning up fresh contexts for integration tests, re-use where possible.
-- Mocking or scenario setups can be encapsulated in scenario setup method e.g.
-  `givenTheCustomerFailedVerification
-() {} // mocking happens here }`
+- Mocking or scenario setups can be encapsulated in a scenario setup method e.g.
+  `givenTheCustomerFailedVerification() { /* mocking happens here */ }`
 - Group similar tests using `@Nested` classes.
