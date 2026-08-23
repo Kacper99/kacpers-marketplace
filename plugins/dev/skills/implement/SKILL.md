@@ -25,7 +25,7 @@ Use the `code-reviewer` agent for reviewing a task after an Engineer has complet
 ## Step 1
 Read the plan at $plan_dir — `context.md` plus every `task-NN.md` — along with the design document it was built from. The plan may already be in progress, so get a base understanding of where we're at by looking at the status of each task. Ensure that any in progress, or completed tasks do actually exist. These may be commits on the current branch, other branches, or already be merged into master. If an in progress or completed task cannot be found, stop and ask me about it.
 
-Create the RUN-NOTES.md next to the plan if it does not exist. Use `template/RUN-NOTES.md` template to seed it.
+Create the RUN-NOTES.md next to the plan if it does not exist. Use `../_shared/template/RUN-NOTES.md` template to seed it (shared with `implement-one`).
 
 Read the plan's dependency graph and compute the **independent chains**: sets of tasks that share no dependency. Record them in RUN-NOTES before starting, and note the top-level paths each chain touches so collision risk is visible.
 
@@ -39,7 +39,7 @@ Run the independent chains concurrently. Within a chain, work the tasks in order
 2. As soon as the agent completes, set the status of the task to "Dev Complete"
 3. Review the agents report from the task, if the agent has not raised any issues or concerns, set the status to "Ready For Review"
 4. Run the **gate build** yourself: one full build and test run, redirected to a file, reading the real exit code. This is the only full-suite run for this task. Pass the exit code and per-suite test counts to the reviewer so it does not repeat them.
-5. Dispatch a `code-reviewer` agent to review the implementation. Use `template/code-reviewer-prompt.md` as the template to prompt the agent.
+5. Dispatch a `code-reviewer` agent to review the implementation. Use `../_shared/template/code-reviewer-prompt.md` (shared with `implement-one`) as the template to prompt the agent.
 6. Once the code reviewer completes, review its comments and determine how to address them. Anything non-trivial, ask me for feedback.
 7. If the reviewer comes back with any critical or important findings, dispatch a new `engineer` subagent (or re-use the one from the implementation step if they're still available — it still holds the context, which is materially cheaper than a fresh agent) to address the comments with the recommended solutions. Set the status of the task to "Addressing Review"
 8. Once the Engineer completes addressing the review comments, verify that the build and tests still pass. If the failures are non trivial dispatch the agent again to resolve them. Set the status to "Completed" once done.

@@ -24,7 +24,7 @@ Use the `code-reviewer` agent for reviewing a task after you've completed its im
 ## Step 1
 Read the plan at $plan_dir — `context.md` plus every `task-NN.md` — along with the design document it was built from. The plan may already be in progress, so get a base understanding of where we're at by looking at the status of each task. Ensure that any in progress, or completed tasks do actually exist. These may be commits on the current branch, other branches, or already be merged into master. If an in progress or completed task cannot be found, stop and ask me about it.
 
-Create the RUN-NOTES.md next to the plan if it does not exist. Use `template/RUN-NOTES.md` to seed it.
+Create the RUN-NOTES.md next to the plan if it does not exist. Use `../_shared/template/RUN-NOTES.md` to seed it (shared with `implement`).
 
 Read the plan's dependency graph and compute the **independent chains**, same as `implement` does. There's no concurrency or worktree isolation here — everything runs serially, in this working directory — so the chains aren't a dispatch unit. They're there to tell you what's ready to pick up next: once you finish a task, stay on its chain if it has a ready follow-on, otherwise hop to the next chain with a ready task. Record the chains in RUN-NOTES before starting.
 
@@ -42,7 +42,7 @@ Work tasks one at a time, in the current agent, picking each one per the chain o
 3. **Self review**, same bar `implement`'s engineer holds itself to: everything in the spec implemented, project compiling, affected tests passing (checking a test still exists is not the same as checking it still pins the same behaviour — a test can keep its name and cover less), formatting/build checks run. Fix anything you find immediately; this is mechanical, don't dispatch a reviewer for it. Commit, then set the status to "Ready For Review".
 4. **Write the task report** to `<plan-dir>/reports/task-N-report.md`: what was implemented, what tests were added and their status, what Agent Skills/Rules were used, self-review findings (if any), deviations from the plan.
 5. **Run the gate build** (if step 2's last narrow run wasn't already the full suite): one full build and test run, redirected to a file, reading the real exit code. Note the exit code and per-suite counts for the reviewer so it doesn't repeat them.
-6. **Dispatch a `code-reviewer` agent** to review the implementation, using `template/code-reviewer-prompt.md`.
+6. **Dispatch a `code-reviewer` agent** to review the implementation, using `../_shared/template/code-reviewer-prompt.md` (shared with `implement`).
 7. Once the reviewer completes, review its comments yourself and determine how to address them. Anything non-trivial, ask me for feedback.
 8. If the reviewer raises critical or important findings, address them yourself, directly — there's no separate engineer to hand this back to. Set the status to "Addressing Review" while you do.
 9. Once addressed, verify the build and tests still pass. Set the status to "Completed" once done. Record the task's commit SHA now, after any post-review amend — a SHA captured before a fix round won't exist by the end of the run.
