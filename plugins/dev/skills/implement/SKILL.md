@@ -52,7 +52,7 @@ Run the independent chains concurrently. Within a chain, work the tasks in order
 **Watchdog.** If an agent returns without committing, or reports waiting on something twice, take the task over yourself rather than resuming it a third time. Record in the task report that the agent did not complete it.
 
 ## Step 3
-Once the plan is fully implemented, dispatch a workflow for an adversarial review. This pass is the most expensive thing in the run and the least productive per token, so keep it small unless the evidence says otherwise.
+Once the plan is fully implemented, dispatch a workflow for an adversarial review — spawn the finder and verifier agents described below as one coordinated set, running the independent finders in parallel and the refuters after, rather than one at a time. This pass is the most expensive thing in the run and the least productive per token, so keep it small unless the evidence says otherwise.
 
 `implement-one`'s Step 3 mirrors this one near-verbatim; update both when changing this text.
 
