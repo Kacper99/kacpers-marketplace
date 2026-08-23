@@ -1,6 +1,6 @@
 ---
 name: code-quality
-description: invoke this skill anytime you are implementing or planning any line of code
+description: Use when implementing or planning any code
 ---
 
 # Code Quality and Best Practices
