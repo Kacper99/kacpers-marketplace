@@ -17,5 +17,5 @@ KM_CLAUDE_FILES = !`echo "$KM_CLAUDE_FILES"`
 # Process
 1. Check that ~/.kmrc file exists. If it doesn't exist, create it
 2. Grep ~/.zshrc to check if ~/.kmrc is sourced, if not add it.
-3. Identify any unset envrionment variables
+3. Identify any unset environment variables
 4. For each unset environment variable, prompt the user for what they would like to set it to, and set the value in ~/.kmrc
