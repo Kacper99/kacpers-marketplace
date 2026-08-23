@@ -30,7 +30,7 @@ Do not force the full process for:
     - Prefer at least two approaches for meaningful decisions.
     - Explain tradeoffs, risks, complexity, and recommendation.
 4. Present a design document based on the selected approach.
-5. Write the document to !`echo $KM_CLAUDE_FILES`/{user story or project name}/spec.md
+5. Write the document to !`echo "$KM_CLAUDE_FILES"`/{user story or project name}/spec.md
 6. Spawn a separate agent to do an adversarial review of the specification. Ensure the agent checks for any contradictions, ambiguity, deviation from the original request, or incomplete steps.
 7. Ask the user for feedback on the specification, and address any comments. Do not blindly accept each review comment, ensure you validate it before agreeing. You may push back on any comments.
 
