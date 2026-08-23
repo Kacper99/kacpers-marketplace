@@ -53,6 +53,8 @@ Run the independent chains concurrently. Within a chain, work the tasks in order
 ## Step 3
 Once the plan is fully implemented, dispatch a workflow for an adversarial review. This pass is the most expensive thing in the run and the least productive per token, so keep it small unless the evidence says otherwise.
 
+`implement-one`'s Step 3 mirrors this one near-verbatim; update both when changing this text.
+
 Always include, regardless of plan size:
 - One code-quality finder over the entire branch diff, applying the code-quality skill. Give it the plan's global constraints and cross-task seams to check as part of its brief. This is the highest-yield auditor, because it is the only one that can see duplication and drift *across* tasks.
 - A build-and-test verifier, the **only** agent permitted to run the build. Tell every other agent in the workflow explicitly not to invoke it, for the same corruption reason as Step 2. Expect this agent to find no defects: its job is confirmation, so do not count it as a finder.
