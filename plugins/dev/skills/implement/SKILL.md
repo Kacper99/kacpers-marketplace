@@ -37,12 +37,12 @@ If the plan does not state its chains, derive them yourself and record what you 
 Run the independent chains concurrently. Within a chain, work the tasks in order:
 1. Dispatch a `engineer` subagent to implement the task in the plan. Use the `template/implementer-prompt.md` template to prompt the subagent.
 2. As soon as the agent completes, set the status of the task to "Dev Complete"
-3. Review the agents report from the task, if the agent has not raised any issues or concerns, set the status to "Ready for review"
+3. Review the agents report from the task, if the agent has not raised any issues or concerns, set the status to "Ready For Review"
 4. Run the **gate build** yourself: one full build and test run, redirected to a file, reading the real exit code. This is the only full-suite run for this task. Pass the exit code and per-suite test counts to the reviewer so it does not repeat them.
 5. Dispatch a `code-reviewer` agent to review the implementation. Use `template/code-reviewer-prompt.md` as the template to prompt the agent.
 6. Once the code reviewer completes, review its comments and determine how to address them. Anything non-trivial, ask me for feedback.
 7. If the reviewer comes back with any critical or important findings, dispatch a new `engineer` subagent (or re-use the one from the implementation step if they're still available — it still holds the context, which is materially cheaper than a fresh agent) to address the comments with the recommended solutions. Set the status of the task to "Addressing Review"
-8. Once the Engineer completes addressing the review comments, verify that the build and tests still pass. If the failures are non trivial dispatch the agent again to resolve them. Set the status to completed once done.
+8. Once the Engineer completes addressing the review comments, verify that the build and tests still pass. If the failures are non trivial dispatch the agent again to resolve them. Set the status to "Completed" once done.
 
 **You own the Status lines.** Engineers and reviewers must not edit them; if one does, correct it.
 

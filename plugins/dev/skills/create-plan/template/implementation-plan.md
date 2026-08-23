@@ -15,7 +15,7 @@ After the diagram, state explicitly:
 
 ## Status vocabulary
 
-Ready For Dev -> In Progress -> Ready For Review -> Addressing Review -> Completed
+Ready For Dev -> In Dev -> Dev Complete -> Ready For Review -> Addressing Review -> Completed
 
 **The orchestrator owns these lines. Implementers and reviewers must not edit them.**
 
@@ -24,7 +24,7 @@ Ready For Dev -> In Progress -> Ready For Review -> Addressing Review -> Complet
 ### Task [N]: [Task name]
 [Tasks should ideally be scoped to a single small change. The change should be a single PR and be passing on its own]
 
-**Status: ** [Ready For Dev, In Dev, Dev Complete, Ready for Review, In Review, Review Complete, Addressing Review, Completed]
+**Status: ** [one of the Status vocabulary values above]
 
 **Dependencies: ** [what task does this one depend on. What specific functionality/classes/interfaces does it rely on]
 
