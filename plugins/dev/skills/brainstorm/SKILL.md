@@ -38,3 +38,15 @@ Do not force the full process for:
 
 # Guidelines
 - Designs/Specifications should be high-level. We are not looking for specific code implementations. Pseudocode, or high-level examples are enough.
+- If the work is linked to a ticket, open the document with a one-line title (`# TICKET-ID: short title`), then a metadata table, then `## Summary`. Do not cram ticket/epic/status/lineage into prose paragraphs above the summary. Table rows, only include the ones that apply:
+
+  | Field | When to include |
+  |---|---|
+  | `Ticket` | Always. Link text is the ticket ID, e.g. `[USWL-2749](https://.../USWL-2749)`. |
+  | `Epic` | Always, if the ticket has one. |
+  | `Status` | Always: current stage and the date it was reached, e.g. `Technical design, 2026-09-10`. |
+  | `Split from` | Only if this ticket was carved out of another spec, e.g. `[USWL-2635](../USWL-2635/spec.md) spec, "Flow 3"`. |
+
+  Revisions to status (e.g. "revised 2026-09-08 (...)") go in this same row, not a separate sentence.
+
+  If there is no linked ticket, skip the metadata table entirely. Use a one-line title and, if useful, a single-sentence description directly under it before `## Summary`.
