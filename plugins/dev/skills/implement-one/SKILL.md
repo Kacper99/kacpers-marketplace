@@ -10,7 +10,7 @@ arguments:
 
 Execute a plan by implementing each task yourself, in the current agent, instead of dispatching an `engineer` subagent per task. This trades the isolation and concurrency of `implement` for lower overhead on plans that don't need it — small plans, or a single task you want done inline without spinning up a fresh agent.
 
-Task review still goes to an independent `code-reviewer` agent, and the plan still gets the adversarial review pass at the end — both benefit from a perspective that didn't just write the code, and neither is expensive enough to justify collapsing into you.
+Task review still goes to independent `code-reviewer` and `rules-reviewer` agents, and the plan still gets the adversarial review pass at the end — all of them benefit from a perspective that didn't just write the code, and none is expensive enough to justify collapsing into you. The rules audit especially: you cannot reliably catch yourself breaking a rule you did not load.
 
 # Roles
 
@@ -19,6 +19,9 @@ You implement every task directly, and you orchestrate + own the plan's Status l
 
 ## Code Reviewer
 Use the `code-reviewer` agent for reviewing a task after you've completed its implementation. Same as `implement`.
+
+## Rules Reviewer
+Use the `rules-reviewer` agent to audit the same task against the rules files. Same as `implement`: narrow by design, reports only violations it can back with a quoted rule line, and never folds into the `code-reviewer` pass.
 
 # Steps
 
@@ -43,13 +46,13 @@ Work tasks one at a time, in the current agent, picking each one per the chain o
 3. **Self review**, same bar `implement`'s engineer holds itself to: everything in the spec implemented, project compiling, affected tests passing (checking a test still exists is not the same as checking it still pins the same behaviour — a test can keep its name and cover less), formatting/build checks run. Fix anything you find immediately; this is mechanical, don't dispatch a reviewer for it. Commit, then set the status to "Ready For Review".
 4. **Write the task report** to `<plan-dir>/reports/task-N-report.md`: what was implemented, what tests were added and their status, what Agent Skills/Rules were used, self-review findings (if any), deviations from the plan.
 5. **Run the gate build** (if step 2's last narrow run wasn't already the full suite): one full build and test run, redirected to a file, reading the real exit code. Note the exit code and per-suite counts for the reviewer so it doesn't repeat them.
-6. **Dispatch a `code-reviewer` agent** to review the implementation, using `../_shared/template/code-reviewer-prompt.md` (shared with `implement`).
-7. Once the reviewer completes, review its comments yourself and determine how to address them. Anything non-trivial, ask me for feedback.
-8. If the reviewer raises critical or important findings, address them yourself, directly — there's no separate engineer to hand this back to. Set the status to "Addressing Review" while you do.
+6. **Dispatch a `code-reviewer` agent and a `rules-reviewer` agent** to review the implementation, concurrently — they read the same commits, neither writes, and neither builds. Use `../_shared/template/code-reviewer-prompt.md` and `../_shared/template/rules-reviewer-prompt.md` respectively (both shared with `implement`).
+7. Once both reviewers complete, review their comments yourself and determine how to address them. Anything non-trivial, ask me for feedback. A rules finding that quotes a rule line is not a judgement call: take it unless the quoted line does not say what the finding claims it says.
+8. If either reviewer raises critical or important findings, address them yourself, directly — there's no separate engineer to hand this back to. Set the status to "Addressing Review" while you do.
 9. Once addressed, verify the build and tests still pass. Set the status to "Completed" once done. Record the task's commit SHA now, after any post-review amend — a SHA captured before a fix round won't exist by the end of the run.
 10. **Continue or checkpoint.** If you still have plenty of context budget left and there's a ready next task (per the chains from Step 1), move straight on to it without waiting to be asked. If context is getting tight, or nothing is ready (blocked on a decision, or the plan's exhausted), stop here and report where things stand — the plan and RUN-NOTES are enough for a fresh run of `implement-one` to pick back up.
 
-**You own the Status lines.** The code reviewer must not edit them; if it does, correct it.
+**You own the Status lines.** The reviewers must not edit them; if one does, correct it.
 
 **If you find yourself stuck on the same thing twice** — waiting on something, or a fix that doesn't hold — stop and ask me rather than attempting it a third time.
 
@@ -58,6 +61,7 @@ Once the plan is fully implemented, dispatch a workflow for an adversarial revie
 
 Always include, regardless of plan size:
 - One code-quality finder over the entire branch diff, applying the code-quality skill. Give it the plan's global constraints and cross-task seams to check as part of its brief. This is the highest-yield auditor, because it is the only one that can see duplication and drift *across* tasks.
+- One `rules-reviewer` over the entire branch diff. Per-task audits cannot see a rule broken consistently across tasks, and they cannot judge commit granularity or branch shape until the branch is finished. Brief it with the full commit list and the base branch.
 - A build-and-test verifier, the **only** agent permitted to run the build. Tell every other agent in the workflow explicitly not to invoke it, for the same corruption reason as Step 2. Expect this agent to find no defects: its job is confirmation, so do not count it as a finder.
 
 Add a per-task plan-compliance finder ONLY for a task that needed an "Addressing Review" round. A task whose review came back clean, or whose minor findings you fixed directly, has already had its exact-compliance pass; do not re-audit it.
@@ -70,9 +74,11 @@ Verification of findings:
 - Record minor findings without a verify pass.
 
 # Reports
-Reports should be placed under a report directory in the same directory the plan is in. The format is <plan-dir>/reports/task-N-{report,review}.md
+Reports should be placed under a report directory in the same directory the plan is in. The format is <plan-dir>/reports/task-N-{report,review,rules-review}.md
 
 Record a task's commit SHA only once that task is finally green, after any post-review amend. A SHA captured before a fix round will not exist by the end of the run.
 
-# Selecting the code-reviewer's model
+# Selecting the reviewers' model
 When spawning a `code-reviewer` subagent you may only use Opus. There's no engineer subagent to pick a model for — you implement in whatever model you're already running as.
+
+The `rules-reviewer` pins no model of its own, so pick one when you dispatch it. Use anything that will work through a long checklist without skipping entries. Do not use Fable.

@@ -21,6 +21,9 @@ Use the `engineer` agent for any implementation tasks. Each agent is responsible
 ## Code Reviewer
 Use the `code-reviewer` agent for reviewing a task after an Engineer has completed its implementation.
 
+## Rules Reviewer
+Use the `rules-reviewer` agent to audit the same task against the rules files. It is deliberately narrow: it reports only violations it can back with a quoted rule line, and it ignores everything the `code-reviewer` covers. Rules get missed precisely because a general reviewer has bigger things to look at, so this pass is not optional and does not fold into the other one.
+
 # Steps
 
 ## Step 1
@@ -40,9 +43,9 @@ Run the independent chains concurrently. Within a chain, work the tasks in order
 2. As soon as the agent completes, set the status of the task to "Dev Complete"
 3. Review the agents report from the task, if the agent has not raised any issues or concerns, set the status to "Ready For Review"
 4. Run the **gate build** yourself: one full build and test run, redirected to a file, reading the real exit code. This is the only full-suite run for this task. Pass the exit code and per-suite test counts to the reviewer so it does not repeat them.
-5. Dispatch a `code-reviewer` agent to review the implementation. Use `../_shared/template/code-reviewer-prompt.md` (shared with `implement-one`) as the template to prompt the agent.
-6. Once the code reviewer completes, review its comments and determine how to address them. Anything non-trivial, ask me for feedback.
-7. If the reviewer comes back with any critical or important findings, dispatch a new `engineer` subagent (or re-use the one from the implementation step if they're still available — it still holds the context, which is materially cheaper than a fresh agent) to address the comments with the recommended solutions. Set the status of the task to "Addressing Review"
+5. Dispatch a `code-reviewer` agent and a `rules-reviewer` agent to review the implementation. Run them concurrently — they read the same commits, neither writes, and neither builds. Use `../_shared/template/code-reviewer-prompt.md` and `../_shared/template/rules-reviewer-prompt.md` respectively (both shared with `implement-one`).
+6. Once both reviewers complete, review their comments and determine how to address them. Anything non-trivial, ask me for feedback. A rules finding that quotes a rule line is not a judgement call: take it unless the quoted line does not say what the finding claims it says.
+7. If either reviewer comes back with any critical or important findings, dispatch a new `engineer` subagent (or re-use the one from the implementation step if they're still available — it still holds the context, which is materially cheaper than a fresh agent) to address the comments with the recommended solutions. Set the status of the task to "Addressing Review"
 8. Once the Engineer completes addressing the review comments, verify that the build and tests still pass. If the failures are non trivial dispatch the agent again to resolve them. Set the status to "Completed" once done.
 
 **You own the Status lines.** Engineers and reviewers must not edit them; if one does, correct it.
@@ -58,6 +61,7 @@ Once the plan is fully implemented, dispatch a workflow for an adversarial revie
 
 Always include, regardless of plan size:
 - One code-quality finder over the entire branch diff, applying the code-quality skill. Give it the plan's global constraints and cross-task seams to check as part of its brief. This is the highest-yield auditor, because it is the only one that can see duplication and drift *across* tasks.
+- One `rules-reviewer` over the entire branch diff. Per-task audits cannot see a rule broken consistently across tasks, and they cannot judge commit granularity or branch shape until the branch is finished. Brief it with the full commit list and the base branch.
 - A build-and-test verifier, the **only** agent permitted to run the build. Tell every other agent in the workflow explicitly not to invoke it, for the same corruption reason as Step 2. Expect this agent to find no defects: its job is confirmation, so do not count it as a finder.
 
 Add a per-task plan-compliance finder ONLY for a task that needed a dispatched **Addressing Review** round. A task whose review came back clean, or whose minor findings you fixed directly, has already had its exact-compliance pass; do not re-audit it.
@@ -70,7 +74,7 @@ Verification of findings:
 - Record minor findings without a verify pass.
 
 # Reports
-Reports should be placed under a report directory in the same directory the plan is in. The format is <plan-dir>/reports/task-N-{report,review}.md
+Reports should be placed under a report directory in the same directory the plan is in. The format is <plan-dir>/reports/task-N-{report,review,rules-review}.md
 
 Record a task's commit SHA only once that task is finally green, after any post-review amend. A SHA captured before a fix round will not exist by the end of the run.
 
@@ -78,3 +82,5 @@ Record a task's commit SHA only once that task is finally green, after any post-
 When spawning an `engineer` subagent you may only use Sonnet or Opus. Do not use Haiku or Fable. Select Sonnet or Opus based on the complexity of the task. Simple file moves or small changes can be handled by Sonnet.
 
 When spawning a `code-reviewer` subagent. You may only use Opus.
+
+The `rules-reviewer` pins no model of its own, so pick one when you dispatch it. Use anything that will work through a long checklist without skipping entries. Do not use Fable.
